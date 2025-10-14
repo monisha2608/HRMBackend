@@ -1,10 +1,12 @@
-using System.Text;
 using HRM.Backend.Data;
 using HRM.Backend.Models;
+using HRMBackend.Data;
+using HRMBackend.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,7 @@ builder.Services.AddIdentityCore<AppUser>(options =>
 })
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>()
+.AddSignInManager<SignInManager<AppUser>>()   // needed for password checks in login
 .AddDefaultTokenProviders();
 
 // JWT Auth
@@ -56,14 +59,39 @@ builder.Services.AddAuthorization();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", p =>
-        p.WithOrigins("http://localhost:3000") // your React dev URL
+        p.WithOrigins("http://localhost:3000") // add your deployed frontend origin here too
          .AllowAnyHeader()
          .AllowAnyMethod());
 });
 
+// DI: JWT token service
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(o =>
+{
+    o.SwaggerDoc("v1", new() { Title = "HRM API", Version = "v1" });
+
+    // JWT Bearer setup for Swagger
+    var jwtScheme = new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Enter: Bearer {your JWT token}"
+    };
+    o.AddSecurityDefinition("Bearer", jwtScheme);
+    o.AddSecurityRequirement(new()
+    {
+        {
+            jwtScheme, Array.Empty<string>()
+        }
+    });
+});
 
 var app = builder.Build();
 
@@ -81,5 +109,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Seed roles (HR, Candidate) and optional initial HR user
+await DbSeeder.SeedAsync(app.Services);
 
 app.Run();

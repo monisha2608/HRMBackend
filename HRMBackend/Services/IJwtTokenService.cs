@@ -1,6 +1,9 @@
-﻿namespace HRMBackend.Services
+﻿using HRM.Backend.Models;
+
+namespace HRMBackend.Services
 {
-    public class IJwtTokenService
+    public interface IJwtTokenService
     {
+        Task<(string token, DateTime expiresUtc)> CreateTokenAsync(AppUser user);
     }
 }
