@@ -29,7 +29,13 @@ builder.Services.AddIdentityCore<AppUser>(options =>
 .AddDefaultTokenProviders();
 
 // JWT (for APIs, used by React)
-var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new Exception("Jwt:Key missing");
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    Console.Error.WriteLine("FATAL: Jwt:Key missing. Set it in App Service → Environment variables.");
+    throw new Exception("Jwt:Key missing");
+}
+
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
@@ -68,11 +74,32 @@ builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", p =>
-        p.WithOrigins("http://localhost:3000", "https://<your-vercel-app>.vercel.app")
-         .AllowAnyHeader()
-         .AllowAnyMethod()
-         .AllowCredentials());
+        p.SetIsOriginAllowed(origin =>
+        {
+            // allow localhost dev
+            if (origin == "http://localhost:3000") return true;
+
+            // allow your production vercel domain EXACTLY:
+            if (origin == "https://hrm-app-ten.vercel.app/") return true;
+
+            // allow any vercel preview domain (e.g., https://proj-abc123-user.vercel.app)
+            try
+            {
+                var host = new Uri(origin).Host; // e.g., proj-abc123-user.vercel.app
+                if (host.EndsWith(".vercel.app", StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+            catch { /* ignore parse errors */ }
+
+            return false;
+        })
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+    // Only needed if you use cookies; safe to leave off since you use Bearer tokens:
+    //.AllowCredentials()
+    );
 });
+
 
 // MVC + API
 builder.Services.AddControllersWithViews(); // 👈 add views
@@ -84,6 +111,25 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await db.Database.MigrateAsync();
+}
+using (var scope = app.Services.CreateScope())
+{
+    var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userMgr = scope.ServiceProvider.GetRequiredService<UserManager<AppUser>>();
+
+    if (!await roleMgr.RoleExistsAsync("HR"))
+        await roleMgr.CreateAsync(new IdentityRole("HR"));
+
+    var adminEmail = Environment.GetEnvironmentVariable("HR_ADMIN_EMAIL") ?? "hr@xyzcorp.com";
+    var adminPass = Environment.GetEnvironmentVariable("HR_ADMIN_PASSWORD") ?? "HrAdmin123!";
+
+    var admin = await userMgr.FindByEmailAsync(adminEmail);
+    if (admin == null)
+    {
+        admin = new AppUser { UserName = adminEmail, Email = adminEmail, FullName = "HR Admin" };
+        await userMgr.CreateAsync(admin, adminPass);
+        await userMgr.AddToRoleAsync(admin, "HR");
+    }
 }
 app.UseStaticFiles();
 if (app.Environment.IsDevelopment())
