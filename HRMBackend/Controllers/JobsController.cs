@@ -24,25 +24,55 @@ namespace HRMBackend.Controllers
 
         // GET /api/jobs
         [HttpGet]
-        [AllowAnonymous]
-        public async Task<ActionResult<IEnumerable<JobResponse>>> GetAll()
+        public async Task<IActionResult> Get(
+        [FromQuery] string? q,
+        [FromQuery] string? location,
+        [FromQuery] string? department,
+        [FromQuery] string? employmentType,
+        [FromQuery] int page = 1,
+        [FromQuery] int size = 10)
         {
-            var jobs = await _db.Jobs
+            page = page < 1 ? 1 : page;
+            size = size is < 1 or > 100 ? 10 : size;
+
+            var query = _db.Jobs.AsNoTracking();
+
+            if (!string.IsNullOrWhiteSpace(q))
+            {
+                var like = $"%{q.Trim()}%";
+                query = query.Where(j =>
+                    EF.Functions.Like(j.Title, like) ||
+                    EF.Functions.Like(j.Description!, like));
+            }
+            if (!string.IsNullOrWhiteSpace(location))
+                query = query.Where(j => j.Location == location);
+
+            if (!string.IsNullOrWhiteSpace(department))
+                query = query.Where(j => j.Department == department);
+
+            if (!string.IsNullOrWhiteSpace(employmentType))
+                query = query.Where(j => j.EmploymentType == employmentType);
+
+            var total = await query.CountAsync();
+
+            var items = await query
                 .OrderByDescending(j => j.PostedOn)
-                .Select(j => new JobResponse
-                {
-                    Id = j.Id,
-                    Title = j.Title,
-                    Description = j.Description,
-                    Department = j.Department,
-                    Location = j.Location,
-                    EmploymentType = j.EmploymentType,
-                    PostedOn = j.PostedOn
+                .Skip((page - 1) * size)
+                .Take(size)
+                .Select(j => new {
+                    id = j.Id,
+                    title = j.Title,
+                    description = j.Description,
+                    department = j.Department,
+                    location = j.Location,
+                    employmentType = j.EmploymentType,
+                    postedOn = j.PostedOn
                 })
                 .ToListAsync();
 
-            return Ok(jobs);
+            return Ok(new { page, size, total, items });
         }
+
 
         // GET /api/jobs/{id}
         [HttpGet("{id:int}")]

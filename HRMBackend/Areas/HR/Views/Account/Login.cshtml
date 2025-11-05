@@ -1,0 +1,25 @@
+﻿@{
+    ViewBag.Title = "HR Login";
+}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card p-4">
+            <h3 class="mb-3">HR Login</h3>
+            @if (ViewBag.Error != null)
+            {
+                <div class="alert alert-danger">@ViewBag.Error</div>
+            }
+            <form method="post" asp-area="HR" asp-controller="Account" asp-action="Login">
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input name="email" class="form-control" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Password</label>
+                    <input name="password" type="password" class="form-control" />
+                </div>
+                <button class="btn btn-orangered">Sign in</button>
+            </form>
+        </div>
+    </div>
+</div>

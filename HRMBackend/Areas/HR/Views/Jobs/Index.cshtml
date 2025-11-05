@@ -1,0 +1,60 @@
+﻿@model IEnumerable<HRMBackend.Areas.HR.Controllers.JobsController.JobRow>
+@{
+    ViewData["Title"] = "Jobs";
+    var q = ViewBag.Query as string ?? "";
+}
+
+<div class="hr-card mb-3">
+    <div class="hr-card-header d-flex justify-content-between align-items-center">
+        <div>Jobs</div>
+        <a class="btn btn-primary btn-sm" asp-area="HR" asp-controller="Jobs" asp-action="Create">New Job</a>
+    </div>
+    <div class="hr-card-body">
+        <form method="get" class="hr-toolbar">
+            <input class="form-control" style="max-width:320px" name="q" value="@q" placeholder="Search title/department/location" />
+            <button class="btn btn-outline-light">Search</button>
+        </form>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table hr-table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Department</th>
+                <th>Location</th>
+                <th>Type</th>
+                <th>Posted</th>
+                <th>Applicants</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var j in Model)
+            {
+                <tr>
+                    <td class="fw-semibold">@j.Title</td>
+                    <td>@(j.Department ?? "—")</td>
+                    <td>@(j.Location ?? "—")</td>
+                    <td><span class="hr-chip">@((j.EmploymentType ?? "—"))</span></td>
+                    <td>@j.PostedOn.ToLocalTime().ToString("MMM d, yyyy")</td>
+                    <td>@j.Applicants</td>
+                    <td class="text-end">
+                        <a class="btn btn-bright btn-blue" asp-action="Edit" asp-route-id="@j.Id">Edit</a>
+                        <a class="btn btn-bright btn-amber" asp-area="HR" asp-controller="Applications" asp-action="Index" asp-route-jobId="@j.Id">Applicants</a>
+                        <form method="post" asp-action="Delete" asp-route-id="@j.Id" class="d-inline" onsubmit="return confirm('Delete this job?');">
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-bright btn-rose">Delete</button>
+                        </form>
+                    </td>
+
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="7" class="text-center small-muted py-4">No jobs yet</td></tr>
+            }
+        </tbody>
+    </table>
+</div>

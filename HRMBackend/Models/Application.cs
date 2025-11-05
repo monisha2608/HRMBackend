@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRM.Backend.Models
 {
@@ -9,23 +8,31 @@ namespace HRM.Backend.Models
 
         [Required]
         public int JobId { get; set; }
-
-        [ForeignKey(nameof(JobId))]
         public Job Job { get; set; } = default!;
 
+        public string? CandidateUserId { get; set; }
+        public AppUser? CandidateUser { get; set; }
+
         [Required]
-        public string CandidateUserId { get; set; } = default!;
+        public DateTime AppliedOn { get; set; }
 
-        [ForeignKey(nameof(CandidateUserId))]
-        public AppUser CandidateUser { get; set; } = default!;
-
-        [MaxLength(512)]
-        public string? ResumeUrl { get; set; }
-
-        public string? CoverLetter { get; set; }
-
+        [Required]
         public ApplicationStatus Status { get; set; } = ApplicationStatus.Applied;
 
-        public DateTime AppliedOn { get; set; } = DateTime.UtcNow;
+        public string? ResumeUrl { get; set; }
+
+        [MaxLength(5000)]
+        public string? CoverLetter { get; set; }
+
+        // NEW: contact fields captured from the form (guest or explicit capture)
+        [MaxLength(120)]
+        public string? ApplicantFullName { get; set; }
+
+        [MaxLength(200)]
+        [EmailAddress]
+        public string? ApplicantEmail { get; set; }
+
+        [MaxLength(25)]
+        public string? ApplicantPhone { get; set; }
     }
 }

@@ -1,0 +1,104 @@
+﻿@model IEnumerable<HRMBackend.Areas.HR.Controllers.ApplicationsController.AppVM>
+@{
+    ViewData["Title"] = "Applicants";
+    var job = ViewBag.Job as HRM.Backend.Models.Job;
+    string currentStatus = ViewBag.Status as string ?? "";
+    string query = ViewBag.Query as string ?? "";
+    string[] statuses = new[] { "Applied","UnderReview","Shortlisted","InterviewScheduled","Offered","Hired","Rejected" };
+}
+
+<div class="hr-card mb-3">
+  <div class="hr-card-header d-flex justify-content-between align-items-center">
+    <div>Applicants • @job?.Title</div>
+    <div class="small-muted">@job?.Department • @job?.Location</div>
+  </div>
+  <div class="hr-card-body">
+    <form method="get" class="hr-toolbar">
+      <input type="hidden" name="jobId" value="@job?.Id" />
+      <input class="form-control" style="max-width:320px" name="q" value="@query" placeholder="Search name/email/phone" />
+      <select name="status" class="form-select" style="max-width:220px">
+        <option value="">All statuses</option>
+        @foreach (var s in statuses) { <option value="@s" selected="@(s==currentStatus)">@s</option> }
+      </select>
+      <button class="btn btn-outline-light">Filter</button>
+            <div class="ms-auto">
+                <a class="btn btn-primary btn-pill btn-shadow"
+                   href="@($"/api/hr/reports/applications-csv?jobId={job?.Id}")">
+                    Export CSV
+                </a>
+            </div>
+    </form>
+  </div>
+</div>
+
+<div class="table-responsive">
+  <table class="table hr-table">
+    <thead>
+      <tr>
+        <th>Candidate (Account)</th>
+        <th>Contact (Form)</th>
+        <th>Applied</th>
+        <th>Status</th>
+        <th>Resume</th>
+        <th class="text-end">Update</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var a in Model)
+      {
+        <tr>
+          <td>
+            @if (!string.IsNullOrWhiteSpace(a.CandidateName) || !string.IsNullOrWhiteSpace(a.CandidateEmail)) {
+              <div class="fw-semibold">@a.CandidateName</div>
+              <div class="small-muted">@a.CandidateEmail</div>
+            } else { @:— 
+            }
+          </td>
+          <td>
+            <div class="fw-semibold">@((a.ApplicantFullName) ?? "—")</div>
+            <div class="small-muted">@((a.ApplicantEmail) ?? "—") · @((a.ApplicantPhone) ?? "—")</div>
+          </td>
+          <td>@a.AppliedOn.ToLocalTime().ToString("MMM d, yyyy h:mm tt")</td>
+          @{
+    // Turn enum into a string (e.g. UnderReview)
+    var statusText = a.Status.ToString();
+
+    // Optional: nicer label with spaces
+    var pretty = statusText
+        .Replace("UnderReview", "Under Review")
+        .Replace("InterviewScheduled", "Interview Scheduled");
+}
+<td>
+    <span class="hr-chip" data-status="@statusText">@pretty</span>
+</td>
+
+          <td>
+  @if (!string.IsNullOrWhiteSpace(a.ResumeUrl))
+  {
+    var abs = $"{Context.Request.Scheme}://{Context.Request.Host}{a.ResumeUrl}";
+    <a href="@abs" target="_blank" rel="noreferrer">Open</a>
+  }
+  else { @:— 
+  }
+</td>
+          <td class="text-end">
+            <form method="post" asp-area="HR" asp-controller="Applications" asp-action="UpdateStatus" class="d-inline-flex gap-2">
+              @Html.AntiForgeryToken()
+              <input type="hidden" name="id" value="@a.Id" />
+              <input type="hidden" name="jobId" value="@job?.Id" />
+              <select name="newStatus" class="form-select form-select-sm" style="max-width:220px">
+                @foreach (var s in statuses) {
+                  <option value="@s" selected="@(s==a.Status)">@s</option>
+                }
+              </select>
+              <button class="btn btn-gold">Update</button>
+            </form>
+          </td>
+        </tr>
+      }
+      @if (!Model.Any()) {
+        <tr><td colspan="6" class="text-center small-muted py-4">No applicants</td></tr>
+      }
+    </tbody>
+  </table>
+</div>

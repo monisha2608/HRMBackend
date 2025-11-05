@@ -1,0 +1,224 @@
+﻿/* ===== Bright Professional HR Theme ===== */
+:root {
+    --bg-light: #f4f7fb;
+    --text-dark: #0b1220;
+    --border-color: #e2e8f0;
+    --card-bg: #ffffff;
+    /* Button colors */
+    --btn-blue: #2563eb;
+    --btn-blue-hover: #1d4ed8;
+    --btn-rose: #e11d48;
+    --btn-rose-hover: #be123c;
+    --btn-violet: #7c3aed;
+    --btn-violet-hover: #6d28d9;
+    --btn-teal: #0d9488;
+    --btn-teal-hover: #0f766e;
+    --btn-amber: #d97706;
+    --btn-amber-hover: #b45309;
+    --btn-lime: #65a30d;
+    --btn-lime-hover: #4d7c0f;
+    --btn-cyan: #0891b2;
+    --btn-cyan-hover: #0e7490;
+    --btn-slate: #334155;
+    --btn-slate-hover: #1e293b;
+    --btn-orangered: #ff4500;
+    --btn-orangered-hover: #e03e00;
+    --btn-gold: #ffd700;
+    --btn-gold-hover: #e6c200;
+    /* Navbar gradient */
+    --nav-from: #6366f1;
+    --nav-to: #ec4899;
+}
+
+/* Body */
+body {
+    background: var(--bg-light);
+    color: var(--text-dark);
+    font-family: 'Inter', sans-serif;
+}
+
+/* Navbar */
+.hr-nav {
+    background: linear-gradient(90deg, var(--nav-from), var(--nav-to));
+    color: white;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+}
+
+    .hr-nav .nav-link {
+        color: #e2e8f0;
+        font-weight: 600;
+    }
+
+        .hr-nav .nav-link:hover {
+            color: #ffffff;
+        }
+
+/* Cards */
+.hr-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    padding: 1.25rem;
+    transition: 0.2s ease;
+}
+
+    .hr-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+    }
+
+/* Buttons */
+.btn-bright {
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
+}
+
+    .btn-bright:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    }
+
+.btn-blue {
+    background: var(--btn-blue);
+}
+
+    .btn-blue:hover {
+        background: var(--btn-blue-hover);
+    }
+
+.btn-rose {
+    background: var(--btn-rose);
+}
+
+    .btn-rose:hover {
+        background: var(--btn-rose-hover);
+    }
+
+.btn-violet {
+    background: var(--btn-violet);
+}
+
+    .btn-violet:hover {
+        background: var(--btn-violet-hover);
+    }
+
+.btn-teal {
+    background: var(--btn-teal);
+}
+
+    .btn-teal:hover {
+        background: var(--btn-teal-hover);
+    }
+
+.btn-amber {
+    background: var(--btn-amber);
+}
+
+    .btn-amber:hover {
+        background: var(--btn-amber-hover);
+    }
+
+.btn-lime {
+    background: var(--btn-lime);
+}
+
+    .btn-lime:hover {
+        background: var(--btn-lime-hover);
+    }
+
+.btn-cyan {
+    background: var(--btn-cyan);
+}
+
+    .btn-cyan:hover {
+        background: var(--btn-cyan-hover);
+    }
+
+.btn-slate {
+    background: var(--btn-slate);
+}
+
+    .btn-slate:hover {
+        background: var(--btn-slate-hover);
+    }
+
+.btn-orangered {
+    background: var(--btn-orangered);
+}
+
+    .btn-orangered:hover {
+        background: var(--btn-orangered-hover);
+    }
+
+.btn-gold {
+    background: var(--btn-gold);
+}
+
+    .btn-gold:hover {
+        background: var(--btn-gold-hover);
+    }
+
+/* Table */
+.table.hr-table {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+    .table.hr-table thead {
+        background: #e0e7ff;
+        color: #1e293b;
+        font-weight: 700;
+    }
+
+
+.hr-chip {
+    display: inline-block;
+    padding: .35rem .6rem;
+    font-size: .8rem;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    background: #f8fafc;
+    color: #334155;
+    font-weight: 600;
+}
+
+    .hr-chip[data-status="Applied"] {
+        background: #dbeafe;
+        color: #1e3a8a
+    }
+
+    .hr-chip[data-status="UnderReview"] {
+        background: #fef3c7;
+        color: #78350f
+    }
+
+    .hr-chip[data-status="Shortlisted"] {
+        background: #ede9fe;
+        color: #4c1d95
+    }
+
+    .hr-chip[data-status="InterviewScheduled"] {
+        background: #e9f97f;
+        color: #696e04
+    }
+
+    .hr-chip[data-status="Offered"] {
+        background: #dcfce7;
+        color: #14532d
+    }
+
+    .hr-chip[data-status="Hired"] {
+        background: #bbf7d0;
+        color: #14532d
+    }
+
+    .hr-chip[data-status="Rejected"] {
+        background: #fecaca;
+        color: #7f1d1d
+    }
