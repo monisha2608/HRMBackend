@@ -1,25 +1,66 @@
 ﻿@{
     ViewBag.Title = "HR Login";
 }
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card p-4">
-            <h3 class="mb-3">HR Login</h3>
-            @if (ViewBag.Error != null)
-            {
-                <div class="alert alert-danger">@ViewBag.Error</div>
-            }
-            <form method="post" asp-area="HR" asp-controller="Account" asp-action="Login">
-                <div class="mb-3">
-                    <label class="form-label">Email</label>
-                    <input name="email" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Password</label>
-                    <input name="password" type="password" class="form-control" />
-                </div>
-                <button class="btn btn-orangered">Sign in</button>
-            </form>
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-soft-grid position-relative">
+    <!-- soft ambient blobs -->
+    <div class="neon-blob neon-blob--pink"></div>
+    <div class="neon-blob neon-blob--violet"></div>
+
+    <div class="card hr-card p-4 p-md-5 w-100" style="max-width:540px; position:relative;">
+        <div class="text-center mb-4">
+            <h1 class="neon-title">
+                XYZ <span class="text-glow">HR</span>
+            </h1>
+
+            <div class="small text-muted">Secure access for HR team members</div>
         </div>
+
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger shadow-sm">@ViewBag.Error</div>
+        }
+
+        <form method="post" asp-area="HR" asp-controller="Account" asp-action="Login" class="mt-3">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Email</label>
+                <div class="input-group glow-wrap">
+                    <span class="input-group-text bg-white border-0 border-end rounded-start-3 shadow-sm">
+                        <i class="bi bi-envelope text-muted"></i>
+                    </span>
+                    <input name="email" type="email"
+                           class="form-control glow-input border-0 shadow-sm"
+                           placeholder="you@company.com" autocomplete="username" required />
+                </div>
+            </div>
+
+            <div class="mb-2">
+                <label class="form-label fw-semibold">Password</label>
+                <div class="input-group glow-wrap">
+                    <span class="input-group-text bg-white border-0 border-end rounded-start-3 shadow-sm">
+                        <i class="bi bi-shield-lock text-muted"></i>
+                    </span>
+                    <input name="password" type="password"
+                           class="form-control glow-input border-0 shadow-sm"
+                           placeholder="••••••••" autocomplete="current-password" required />
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="remember" name="remember" />
+                    <label class="form-check-label" for="remember">Remember me</label>
+                </div>
+                
+            </div>
+
+            <button class="btn btn-bright btn-orangered w-100 py-2 neon-btn">
+                Sign in
+            </button>
+
+            
+            
+        </form>
     </div>
 </div>

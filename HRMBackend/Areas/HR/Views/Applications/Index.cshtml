@@ -5,100 +5,174 @@
     string currentStatus = ViewBag.Status as string ?? "";
     string query = ViewBag.Query as string ?? "";
     string[] statuses = new[] { "Applied","UnderReview","Shortlisted","InterviewScheduled","Offered","Hired","Rejected" };
+
+    string Pretty(string s) => s
+        .Replace("UnderReview", "Under Review")
+        .Replace("InterviewScheduled", "Interview Scheduled");
+
+    string Initials(string? name)
+    {
+        if (string.IsNullOrWhiteSpace(name)) return "—";
+        var parts = name.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 1) return parts[0][0].ToString().ToUpperInvariant();
+        return (parts[0][0].ToString() + parts[^1][0].ToString()).ToUpperInvariant();
+    }
 }
 
 <div class="hr-card mb-3">
-  <div class="hr-card-header d-flex justify-content-between align-items-center">
-    <div>Applicants • @job?.Title</div>
-    <div class="small-muted">@job?.Department • @job?.Location</div>
-  </div>
-  <div class="hr-card-body">
-    <form method="get" class="hr-toolbar">
+  <div class="hr-card-header d-flex flex-wrap gap-2 justify-content-between align-items-center">
+    <div class="fw-semibold">
+      Applicants • @job?.Title
+      <span class="ms-2 small-muted">@job?.Department • @job?.Location</span>
+    </div>
+
+    <form method="get" class="hr-toolbar d-flex flex-wrap gap-2 align-items-center">
       <input type="hidden" name="jobId" value="@job?.Id" />
-      <input class="form-control" style="max-width:320px" name="q" value="@query" placeholder="Search name/email/phone" />
+      <input class="form-control" style="max-width:320px" name="q" value="@query" placeholder="Search name / email / phone" />
       <select name="status" class="form-select" style="max-width:220px">
         <option value="">All statuses</option>
-        @foreach (var s in statuses) { <option value="@s" selected="@(s==currentStatus)">@s</option> }
+        @foreach (var s in statuses) {
+          <option value="@s" selected="@(s==currentStatus)">@Pretty(s)</option>
+        }
       </select>
-      <button class="btn btn-outline-light">Filter</button>
-            <div class="ms-auto">
-                <a class="btn btn-primary btn-pill btn-shadow"
-                   href="@($"/api/hr/reports/applications-csv?jobId={job?.Id}")">
-                    Export CSV
-                </a>
-            </div>
+      <button class="btn btn-blue btn-bright">Filter</button>
+
+      <a class="ms-auto btn btn-cyan btn-bright"
+         href="@($"/api/hr/reports/applications-csv?jobId={job?.Id}")">
+        Export CSV
+      </a>
     </form>
   </div>
 </div>
 
 <div class="table-responsive">
-  <table class="table hr-table">
+  <table class="table hr-table align-middle table-striped table-hover">
     <thead>
       <tr>
-        <th>Candidate (Account)</th>
-        <th>Contact (Form)</th>
-        <th>Applied</th>
-        <th>Status</th>
-        <th>Resume</th>
-        <th class="text-end">Update</th>
+        <th style="width:28%">Candidate (Account)</th>
+        <th style="width:26%">Contact (Form)</th>
+        <th style="width:14%">Applied</th>
+        <th style="width:12%">Status</th>
+        <th style="width:8%">Score</th>
+        <th style="width:8%">Resume</th>
+        <th class="text-end" style="width:14%">Actions</th>
       </tr>
     </thead>
     <tbody>
       @foreach (var a in Model)
       {
+        var statusText = a.Status?.ToString() ?? "Applied";
+        var pretty = Pretty(statusText);
+
         <tr>
+          <!-- Candidate (account) with tiny “avatar” initials -->
           <td>
-            @if (!string.IsNullOrWhiteSpace(a.CandidateName) || !string.IsNullOrWhiteSpace(a.CandidateEmail)) {
-              <div class="fw-semibold">@a.CandidateName</div>
-              <div class="small-muted">@a.CandidateEmail</div>
-            } else { @:— 
+            <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-inline-flex align-items-center justify-content-center"
+                                 style="width:32px;height:32px;background:linear-gradient(135deg,#a78bfa,#ec4899);color:white;font-weight:700;">
+                                @Initials(a.CandidateName ?? a.CandidateEmail)
+                            </div>
+
+              <div class="min-w-0">
+                <div class="fw-semibold text-truncate" title="@a.CandidateName">@((a.CandidateName) ?? "—")</div>
+                <div class="small-muted text-truncate" title="@a.CandidateEmail">@((a.CandidateEmail) ?? "—")</div>
+              </div>
+            </div>
+          </td>
+
+          <!-- Contact submitted on form -->
+          <td>
+            <div class="fw-semibold text-truncate" title="@a.ApplicantFullName">@((a.ApplicantFullName) ?? "—")</div>
+            <div class="small-muted text-truncate" title="@($"{a.ApplicantEmail ?? "—"} · {a.ApplicantPhone ?? "—"}")">
+              @((a.ApplicantEmail) ?? "—") · @((a.ApplicantPhone) ?? "—")
+            </div>
+          </td>
+
+          <!-- Applied date -->
+          <td>
+            <span title="@a.AppliedOn.ToLocalTime().ToString("yyyy-MM-dd HH:mm")">
+              @a.AppliedOn.ToLocalTime().ToString("MMM d, yyyy h:mm tt")
+            </span>
+          </td>
+
+          <!-- Status chip (keep your existing hr-chip colors) -->
+          <td>
+            <span class="hr-chip" data-status="@statusText">@pretty</span>
+          </td>
+
+          <!-- Score badge with reason tooltip -->
+          <td>
+            @if (a.Score.HasValue) {
+              <span class="badge rounded-pill"
+                    style="background:linear-gradient(135deg,#67e8f9,#60a5fa);color:#0b1220;font-weight:700;"
+                    title="@a.ShortlistReason">
+                @a.Score
+              </span>
+            } else {
+              @:—
             }
           </td>
-          <td>
-            <div class="fw-semibold">@((a.ApplicantFullName) ?? "—")</div>
-            <div class="small-muted">@((a.ApplicantEmail) ?? "—") · @((a.ApplicantPhone) ?? "—")</div>
-          </td>
-          <td>@a.AppliedOn.ToLocalTime().ToString("MMM d, yyyy h:mm tt")</td>
-          @{
-    // Turn enum into a string (e.g. UnderReview)
-    var statusText = a.Status.ToString();
 
-    // Optional: nicer label with spaces
-    var pretty = statusText
-        .Replace("UnderReview", "Under Review")
-        .Replace("InterviewScheduled", "Interview Scheduled");
-}
-<td>
-    <span class="hr-chip" data-status="@statusText">@pretty</span>
-</td>
-
+          <!-- Resume link -->
           <td>
-  @if (!string.IsNullOrWhiteSpace(a.ResumeUrl))
-  {
-    var abs = $"{Context.Request.Scheme}://{Context.Request.Host}{a.ResumeUrl}";
-    <a href="@abs" target="_blank" rel="noreferrer">Open</a>
-  }
-  else { @:— 
-  }
-</td>
-          <td class="text-end">
-            <form method="post" asp-area="HR" asp-controller="Applications" asp-action="UpdateStatus" class="d-inline-flex gap-2">
-              @Html.AntiForgeryToken()
-              <input type="hidden" name="id" value="@a.Id" />
-              <input type="hidden" name="jobId" value="@job?.Id" />
-              <select name="newStatus" class="form-select form-select-sm" style="max-width:220px">
-                @foreach (var s in statuses) {
-                  <option value="@s" selected="@(s==a.Status)">@s</option>
-                }
-              </select>
-              <button class="btn btn-gold">Update</button>
-            </form>
+            @if (!string.IsNullOrWhiteSpace(a.ResumeUrl))
+            {
+              var abs = $"{Context.Request.Scheme}://{Context.Request.Host}{a.ResumeUrl}";
+              <a href="@abs" target="_blank" rel="noreferrer" class="btn btn-sm btn-outline-primary px-2 py-1">Open</a>
+            }
+            else { @:— 
+            }
           </td>
+
+          <!-- Actions -->
+                    <td class="text-end actions-col">
+                        <div class="actions-inline d-inline-flex align-items-center gap-2 flex-nowrap">
+                            <a class="btn btn-rose"
+                               asp-area="HR" asp-controller="Applications" asp-action="Details"
+                               asp-route-id="@a.Id">View</a>
+
+                            <form method="post"
+                                  asp-area="HR" asp-controller="Applications" asp-action="UpdateStatus"
+                                  class="d-inline-flex align-items-center gap-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@a.Id" />
+                                <input type="hidden" name="jobId" value="@job?.Id" />
+
+                                <select name="newStatus"
+                                        class="form-select form-select-sm select-compact"
+                                        style="max-width:170px;min-width:150px;">
+                                    @foreach (var s in statuses)
+                                    {
+                                        <option value="@s" selected="@(s == statusText)">@Pretty(s)</option>
+                                    }
+                                </select>
+
+                                <button class="btn btn-sm btn-gold">Update</button>
+                            </form>
+                        </div>
+                    </td>
+
         </tr>
       }
-      @if (!Model.Any()) {
-        <tr><td colspan="6" class="text-center small-muted py-4">No applicants</td></tr>
+
+      @if (!Model.Any())
+      {
+        <tr>
+          <td colspan="7" class="text-center small-muted py-4">No applicants</td>
+        </tr>
       }
     </tbody>
   </table>
 </div>
+
+<style>
+  /* Extra table polish without touching hr-chip colors */
+  .table.hr-table thead th {
+    font-weight: 700;
+    letter-spacing: .2px;
+  }
+  .table.hr-table tbody tr:hover td {
+    background-color: #f8fafc !important;
+  }
+  .small-muted { color: #6b7280; font-size: .9rem; }
+</style>

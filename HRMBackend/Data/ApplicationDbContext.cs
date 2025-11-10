@@ -11,6 +11,8 @@ namespace HRM.Backend.Data
 
         public DbSet<Job> Jobs => Set<Job>();
         public DbSet<Application> Applications => Set<Application>();
+        public DbSet<ApplicationStatusHistory> ApplicationStatusHistories => Set<ApplicationStatusHistory>();
+        public DbSet<ApplicationNote> ApplicationNotes => Set<ApplicationNote>();
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -43,5 +45,7 @@ namespace HRM.Backend.Data
                       .HasForeignKey(a => a.CandidateUserId)
                       .OnDelete(DeleteBehavior.Restrict);
             };
+
+
     }
 }

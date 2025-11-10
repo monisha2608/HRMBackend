@@ -4,21 +4,25 @@
     var q = ViewBag.Query as string ?? "";
 }
 
-<div class="hr-card mb-3">
-    <div class="hr-card-header d-flex justify-content-between align-items-center">
-        <div>Jobs</div>
-        <a class="btn btn-primary btn-sm" asp-area="HR" asp-controller="Jobs" asp-action="Create">New Job</a>
+<h2 class="dashboard-title mb-4 text-center">Manage Job Listings</h2>
+
+<div class="hr-card mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-semibold text-dark mb-0">Job Management</h5>
+        <a class="btn btn-bright btn-blue px-4 py-2" asp-area="HR" asp-controller="Jobs" asp-action="Create">
+            + New Job
+        </a>
     </div>
-    <div class="hr-card-body">
-        <form method="get" class="hr-toolbar">
-            <input class="form-control" style="max-width:320px" name="q" value="@q" placeholder="Search title/department/location" />
-            <button class="btn btn-outline-light">Search</button>
-        </form>
-    </div>
+
+    <form method="get" class="d-flex flex-wrap align-items-center gap-2">
+        <input class="form-control" style="max-width:320px" name="q" value="@q"
+               placeholder="Search by title, department, or location" />
+        <button class="btn btn-bright btn-cyan">Search</button>
+    </form>
 </div>
 
-<div class="table-responsive">
-    <table class="table hr-table">
+<div class="table-container mt-4">
+    <table class="table hr-table table-hover align-middle shadow-sm">
         <thead>
             <tr>
                 <th>Title</th>
@@ -34,27 +38,41 @@
             @foreach (var j in Model)
             {
                 <tr>
-                    <td class="fw-semibold">@j.Title</td>
+                    <td class="fw-semibold text-dark">@j.Title</td>
                     <td>@(j.Department ?? "—")</td>
                     <td>@(j.Location ?? "—")</td>
-                    <td><span class="hr-chip">@((j.EmploymentType ?? "—"))</span></td>
-                    <td>@j.PostedOn.ToLocalTime().ToString("MMM d, yyyy")</td>
-                    <td>@j.Applicants</td>
-                    <td class="text-end">
-                        <a class="btn btn-bright btn-blue" asp-action="Edit" asp-route-id="@j.Id">Edit</a>
-                        <a class="btn btn-bright btn-amber" asp-area="HR" asp-controller="Applications" asp-action="Index" asp-route-jobId="@j.Id">Applicants</a>
-                        <form method="post" asp-action="Delete" asp-route-id="@j.Id" class="d-inline" onsubmit="return confirm('Delete this job?');">
-                            @Html.AntiForgeryToken()
-                            <button class="btn btn-bright btn-rose">Delete</button>
-                        </form>
+                    <td>
+                        <span class="hr-chip" data-status="@j.EmploymentType">@((j.EmploymentType ?? "—"))</span>
                     </td>
+                    <td class="text-muted">@j.PostedOn.ToLocalTime().ToString("MMM d, yyyy")</td>
+                    <td><span class="badge bg-slate-100 text-dark px-3 py-2">@j.Applicants</span></td>
+                    <td class="text-end">
+                        <a class="btn btn-bright btn-blue btn-sm me-1" asp-action="Edit" asp-route-id="@j.Id">Edit</a>
+                        <a class="btn btn-bright btn-amber btn-sm me-1" asp-area="HR" asp-controller="Applications" asp-action="Index" asp-route-jobId="@j.Id">Applicants</a>
+                        <form method="post"
+                              asp-area="HR"
+                              asp-controller="Jobs"
+                              asp-action="Delete"
+                              asp-route-id="@j.Id"
+                              class="d-inline"
+                              onsubmit="return confirm('Delete this job?');">
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-bright btn-rose btn-sm">Delete</button>
+                        </form>
 
+                    </td>
                 </tr>
             }
+
             @if (!Model.Any())
             {
-                <tr><td colspan="7" class="text-center small-muted py-4">No jobs yet</td></tr>
+                <tr>
+                    <td colspan="7" class="text-center text-secondary py-4 fst-italic">
+                        No job listings available.
+                    </td>
+                </tr>
             }
         </tbody>
     </table>
 </div>
+

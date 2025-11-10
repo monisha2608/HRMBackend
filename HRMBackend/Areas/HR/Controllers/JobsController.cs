@@ -93,6 +93,9 @@ namespace HRMBackend.Areas.HR.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Job model)
         {
+            ModelState.Remove(nameof(Job.PostedByUserId));
+            ModelState.Remove(nameof(Job.PostedByUser));
+            ModelState.Remove(nameof(Job.PostedOn));
             var job = await _db.Jobs.FindAsync(id);
             if (job == null) return NotFound();
             if (!ModelState.IsValid) return View(model);
@@ -111,10 +114,13 @@ namespace HRMBackend.Areas.HR.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var job = await _db.Jobs.FindAsync(id);
+            var job = await _db.Jobs.FirstOrDefaultAsync(j => j.Id == id);
             if (job == null) return NotFound();
-            _db.Remove(job);
+
+            _db.Jobs.Remove(job);
             await _db.SaveChangesAsync();
+
+            TempData["Msg"] = "Job deleted.";
             return RedirectToAction(nameof(Index));
         }
 

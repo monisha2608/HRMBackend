@@ -1,4 +1,4 @@
-﻿/* ===== Bright Professional HR Theme ===== */
+﻿/* ===== Bright Professional HR Theme (clean, no neon/animation) ===== */
 :root {
     --bg-light: #f4f7fb;
     --text-dark: #0b1220;
@@ -25,166 +25,260 @@
     --btn-orangered-hover: #e03e00;
     --btn-gold: #ffd700;
     --btn-gold-hover: #e6c200;
-    /* Navbar gradient */
+    /* Brand gradient */
     --nav-from: #6366f1;
     --nav-to: #ec4899;
 }
 
-/* Body */
 body {
     background: var(--bg-light);
     color: var(--text-dark);
-    font-family: 'Inter', sans-serif;
+    font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
-/* Navbar */
-.hr-nav {
-    background: linear-gradient(90deg, var(--nav-from), var(--nav-to));
-    color: white;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+
+/* ---------- Headings (bigger, colorful, no animation) ---------- */
+.hr-title-xl {
+    font-size: clamp(2rem, 2.4rem + 1vw, 3rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin: 0 0 .75rem;
+    background: linear-gradient(90deg, #ec4899, #8b5cf6, #06b6d4);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
-    .hr-nav .nav-link {
-        color: #e2e8f0;
-        font-weight: 600;
-    }
+.hr-title-lg {
+    font-size: clamp(1.5rem, 1.6rem + .6vw, 2.25rem);
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 0 0 .75rem;
+    background: linear-gradient(90deg, #ec4899, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
 
-        .hr-nav .nav-link:hover {
-            color: #ffffff;
-        }
+/* subtle subtitle */
+.hr-subtitle {
+    color: #475569;
+    font-weight: 500;
+}
 
-/* Cards */
+/* ---------- Cards ---------- */
 .hr-card {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 8px 24px rgba(0,0,0,.05);
     padding: 1.25rem;
-    transition: 0.2s ease;
+    transition: box-shadow .2s ease, transform .2s ease;
 }
 
     .hr-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        transform: translateY(-2px);
+        box-shadow: 0 12px 28px rgba(0,0,0,.08);
     }
 
-/* Buttons */
+.hr-card-header {
+    font-weight: 700;
+    padding-bottom: .5rem;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: .75rem;
+}
+
+.hr-card-body {
+    padding-top: .25rem;
+}
+
+/* ---------- Utilities ---------- */
+.small-muted {
+    color: #6b7280;
+    font-size: .9rem;
+}
+
+.hr-toolbar {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+
+/* ---------- Buttons ---------- */
 .btn-bright {
     border: none;
     color: #fff;
     font-weight: 600;
     border-radius: 8px;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.15);
-    transition: all 0.2s ease;
+    box-shadow: 0 3px 10px rgba(0,0,0,.12);
+    transition: transform .15s ease, box-shadow .2s ease, background .2s ease;
 }
 
     .btn-bright:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(0,0,0,.16);
     }
 
+/* solid variants */
 .btn-blue {
-    background: var(--btn-blue);
+    background: var(--btn-blue)
 }
 
     .btn-blue:hover {
-        background: var(--btn-blue-hover);
+        background: var(--btn-blue-hover)
     }
 
 .btn-rose {
-    background: var(--btn-rose);
+    background: var(--btn-rose)
 }
 
     .btn-rose:hover {
-        background: var(--btn-rose-hover);
+        background: var(--btn-rose-hover)
     }
 
 .btn-violet {
-    background: var(--btn-violet);
+    background: var(--btn-violet)
 }
 
     .btn-violet:hover {
-        background: var(--btn-violet-hover);
+        background: var(--btn-violet-hover)
     }
 
 .btn-teal {
-    background: var(--btn-teal);
+    background: var(--btn-teal)
 }
 
     .btn-teal:hover {
-        background: var(--btn-teal-hover);
+        background: var(--btn-teal-hover)
     }
 
 .btn-amber {
-    background: var(--btn-amber);
+    background: var(--btn-amber)
 }
 
     .btn-amber:hover {
-        background: var(--btn-amber-hover);
+        background: var(--btn-amber-hover)
     }
 
 .btn-lime {
-    background: var(--btn-lime);
+    background: var(--btn-lime)
 }
 
     .btn-lime:hover {
-        background: var(--btn-lime-hover);
+        background: var(--btn-lime-hover)
     }
 
 .btn-cyan {
-    background: var(--btn-cyan);
+    background: var(--btn-cyan)
 }
 
     .btn-cyan:hover {
-        background: var(--btn-cyan-hover);
+        background: var(--btn-cyan-hover)
     }
 
 .btn-slate {
-    background: var(--btn-slate);
+    background: var(--btn-slate)
 }
 
     .btn-slate:hover {
-        background: var(--btn-slate-hover);
+        background: var(--btn-slate-hover)
     }
 
 .btn-orangered {
-    background: var(--btn-orangered);
+    background: var(--btn-orangered)
 }
 
     .btn-orangered:hover {
-        background: var(--btn-orangered-hover);
+        background: var(--btn-orangered-hover)
     }
 
 .btn-gold {
     background: var(--btn-gold);
+    color: #111827;
 }
 
     .btn-gold:hover {
-        background: var(--btn-gold-hover);
+        background: var(--btn-gold-hover)
     }
 
-/* Table */
-.table.hr-table {
+/* outline light used in forms */
+.btn-outline-light {
+    background: #fff;
+    color: #111827;
     border: 1px solid var(--border-color);
     border-radius: 8px;
+    padding: .5rem .9rem;
+    font-weight: 600;
+}
+
+    .btn-outline-light:hover {
+        background: #f8fafc;
+    }
+
+/* ---------- Forms ---------- */
+.form-label {
+    font-weight: 600;
+    color: #111827;
+}
+
+.form-control, .form-select {
+    border: 1px solid var(--border-color);
+    border-radius: 10px !important;
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: #c7d2fe;
+        box-shadow: 0 0 0 .2rem rgba(99,102,241,.15);
+    }
+
+/* ---------- Tables ---------- */
+.table-container {
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 6px 18px rgba(0,0,0,.05);
+    overflow: hidden;
+}
+
+.table.hr-table {
+    margin: 0;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
     overflow: hidden;
 }
 
     .table.hr-table thead {
-        background: #e0e7ff;
-        color: #1e293b;
+        background: linear-gradient(90deg, #6366f1, #ec4899);
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: .4px;
         font-weight: 700;
+        font-size: .9rem;
     }
 
+    .table.hr-table tbody tr {
+        transition: background .15s ease;
+    }
 
+        .table.hr-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+    .table.hr-table td {
+        vertical-align: middle;
+        border-color: #f1f5f9;
+    }
+
+/* ---------- Status Chips (unchanged colors) ---------- */
 .hr-chip {
     display: inline-block;
-    padding: .35rem .6rem;
-    font-size: .8rem;
+    padding: .4rem .75rem;
+    font-size: .85rem;
     border-radius: 999px;
     border: 1px solid #e5e7eb;
-    background: #f8fafc;
-    color: #334155;
+    background: #f9fafb;
+    color: #374151;
     font-weight: 600;
 }
 
@@ -195,22 +289,22 @@ body {
 
     .hr-chip[data-status="UnderReview"] {
         background: #fef3c7;
-        color: #78350f
+        color: #92400e
     }
 
     .hr-chip[data-status="Shortlisted"] {
         background: #ede9fe;
-        color: #4c1d95
+        color: #5b21b6
     }
 
     .hr-chip[data-status="InterviewScheduled"] {
-        background: #e9f97f;
-        color: #696e04
+        background: #e0f2fe;
+        color: #075985
     }
 
     .hr-chip[data-status="Offered"] {
         background: #dcfce7;
-        color: #14532d
+        color: #166534
     }
 
     .hr-chip[data-status="Hired"] {
@@ -219,6 +313,155 @@ body {
     }
 
     .hr-chip[data-status="Rejected"] {
-        background: #fecaca;
+        background: #fee2e2;
         color: #7f1d1d
     }
+
+    /* employment-type chips (optional) */
+    .hr-chip[data-status="Full-time"] {
+        background: #dbeafe;
+        color: #1e3a8a
+    }
+
+    .hr-chip[data-status="Part-time"] {
+        background: #fef3c7;
+        color: #92400e
+    }
+
+    .hr-chip[data-status="Contract"] {
+        background: #e0f2fe;
+        color: #075985
+    }
+
+    .hr-chip[data-status="Internship"] {
+        background: #ecfdf5;
+        color: #065f46
+    }
+/* Keep everything in the Actions cell on one line */
+.actions-col {
+    white-space: nowrap;
+}
+
+/* Compact inline controls */
+.actions-inline .btn,
+.actions-inline .form-select {
+    font-size: .78rem;
+    line-height: 1;
+    padding: .25rem .5rem;
+    height: 32px;
+}
+
+/* Slightly slimmer select */
+.select-compact {
+    padding-right: 1.5rem; /* for the native arrow */
+}
+
+/* Ensure cells align nicely and reduce crowding */
+.table.hr-table td {
+    vertical-align: middle;
+}
+
+    .table.hr-table td:nth-child(1),
+    .table.hr-table td:nth-child(2) {
+        font-size: .92rem;
+    }
+
+/* If a parent adds overflow hidden, this keeps the native select visible */
+.table-responsive {
+    overflow: visible;
+}
+/* ===== HR Navbar - Black with Visible Rounded Boxes ===== */
+.hr-nav {
+    background: #000;
+    color: #fff;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    border-bottom: 1px solid rgba(255,255,255,0.15);
+}
+
+    .hr-nav .navbar-brand {
+        font-weight: 700;
+        color: #fff;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+/* Rounded nav items with visible border */
+.hr-nav-pill {
+    color: #f3f4f6 !important;
+    font-weight: 600;
+    padding: 8px 18px;
+    border: 1.5px solid rgba(255, 255, 255, 0.35); /* make border visible */
+    border-radius: 999px; /* pill shape */
+    transition: all 0.25s ease;
+    background-color: transparent; /* transparent by default */
+    display: inline-block;
+}
+
+    .hr-nav-pill:hover {
+        background-color: rgba(255, 255, 205);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: black !important;
+        transform: translateY(-1px);
+    }
+
+    .hr-nav-pill.active {
+        background-color: deepskyblue;
+        color: black !important;
+        border-color: rgba(255, 255, 255, 0.6);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+
+/* Logout button matches pills */
+.logout-btn {
+    background: transparent;
+    color: #fff !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
+    transition: all 0.25s ease;
+    padding: 8px 18px;
+}
+
+    .logout-btn:hover {
+        background: #f43f5e;
+        border-color: #f43f5e;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+
+/* Mobile-friendly layout */
+@media (max-width: 768px) {
+    .hr-nav .container {
+        flex-direction: column;
+        gap: 10px;
+    }
+}
+/* ===== Animated Neon Title (like first version) ===== */
+.neon-title {
+    font-size: 3.2rem; /* Bigger */
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-align: center;
+    background: linear-gradient(90deg, #ff00cc, #3333ff, #00ffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: hueShift 6s infinite linear;
+    position: relative;
+    text-shadow: 0 0 8px rgba(255, 0, 255, 0.5), 0 0 20px rgba(0, 255, 255, 0.3), 0 0 35px rgba(255, 0, 255, 0.2);
+}
+
+.text-glow {
+    background: linear-gradient(90deg, #ff0099, #7c3aed, #00ffff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+@keyframes hueShift {
+    from {
+        filter: hue-rotate(0deg);
+    }
+
+    to {
+        filter: hue-rotate(360deg);
+    }
+}

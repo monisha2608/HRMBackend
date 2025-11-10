@@ -1,0 +1,36 @@
+﻿<h5 class="mt-4">Status history</h5>
+<ul class="list-group">
+    @foreach (var h in Model.History)
+    {
+        <li class="list-group-item d-flex justify-content-between">
+            <div>
+                <strong>@h.NewStatus</strong>
+                @if (!string.IsNullOrWhiteSpace(h.Note))
+                {
+                    <div class="text-muted small">@h.Note</div>
+                }
+            </div>
+            <div class="text-muted small">@h.ChangedAtUtc.ToLocalTime()</div>
+        </li>
+    }
+</ul>
+
+<h5 class="mt-4">Internal notes</h5>
+<form method="post" asp-area="HR" asp-controller="Applications" asp-action="AddNote">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Application.Id" />
+    <div class="input-group">
+        <input class="form-control" name="body" placeholder="Add a note..." />
+        <button class="btn btn-primary">Add</button>
+    </div>
+</form>
+
+<ul class="list-group mt-3">
+    @foreach (var n in Model.Notes)
+    {
+        <li class="list-group-item">
+            <div>@n.Body</div>
+            <div class="text-muted small">@n.CreatedAtUtc.ToLocalTime()</div>
+        </li>
+    }
+</ul>

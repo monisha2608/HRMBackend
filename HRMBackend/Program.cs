@@ -1,8 +1,7 @@
 ﻿using HRM.Backend.Data;
 using HRM.Backend.Models;
-using HRMBackend.Data;
+using HRM.Backend.Services;
 using HRMBackend.Services;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -11,11 +10,11 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DB
+// ---------- DB ----------
 builder.Services.AddDbContext<ApplicationDbContext>(opts =>
     opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// IdentityCore (you already have this)
+// ---------- Identity ----------
 builder.Services.AddIdentityCore<AppUser>(options =>
 {
     options.Password.RequiredLength = 6;
@@ -28,19 +27,16 @@ builder.Services.AddIdentityCore<AppUser>(options =>
 .AddSignInManager<SignInManager<AppUser>>()
 .AddDefaultTokenProviders();
 
-// JWT (for APIs, used by React)
+// ---------- JWT ----------
 var jwtKey = builder.Configuration["Jwt:Key"];
 if (string.IsNullOrWhiteSpace(jwtKey))
-{
-    Console.Error.WriteLine("FATAL: Jwt:Key missing. Set it in App Service → Environment variables.");
-    throw new Exception("Jwt:Key missing");
-}
+    throw new Exception("Jwt:Key missing (set in Azure App Service → Configuration).");
 
 var jwtIssuer = builder.Configuration["Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Jwt:Audience"];
 var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
 
-// Auth: add BOTH JwtBearer and a Cookie scheme named "HR"
+// Auth: default to JWT for APIs; HR Razor uses explicit cookie scheme name "HR"
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -68,50 +64,58 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddAuthorization();
-builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 
-// CORS for React
+// ---------- CORS ----------
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Frontend", p =>
         p.SetIsOriginAllowed(origin =>
         {
-            // allow localhost dev
+            // local dev
             if (origin == "http://localhost:3000") return true;
 
-            // allow your production vercel domain EXACTLY:
-            if (origin == "https://hrm-app-ten.vercel.app/") return true;
+            // your production vercel domain (NO trailing slash)
+            if (origin == "https://hrm-app-ten.vercel.app") return true;
 
-            // allow any vercel preview domain (e.g., https://proj-abc123-user.vercel.app)
+            // allow any vercel preview domain
             try
             {
-                var host = new Uri(origin).Host; // e.g., proj-abc123-user.vercel.app
+                var host = new Uri(origin).Host; // e.g. proj-abc123-user.vercel.app
                 if (host.EndsWith(".vercel.app", StringComparison.OrdinalIgnoreCase))
                     return true;
             }
-            catch { /* ignore parse errors */ }
+            catch { }
 
             return false;
         })
         .AllowAnyHeader()
         .AllowAnyMethod()
-    // Only needed if you use cookies; safe to leave off since you use Bearer tokens:
-    //.AllowCredentials()
+    // .AllowCredentials() // only if you’re using cookies from the browser
     );
 });
 
-
-// MVC + API
-builder.Services.AddControllersWithViews(); // 👈 add views
+// ---------- MVC / API ----------
+builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// ---------- App Services (DI) ----------
+// IMPORTANT: register ONCE with correct lifetimes
+builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
+builder.Services.AddScoped<IEmailSenderEx, SmtpEmailSender>();           // was duplicate (Scoped + Singleton) → keep Scoped
+builder.Services.AddScoped<IShortlistScorer, KeywordShortlistScorer>();  // ok as Scoped
+builder.Services.AddSingleton<IVirusScanner, NoopScanner>();             // stateless → Singleton ok
+
 var app = builder.Build();
+
+// ---------- DB migrate ----------
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await db.Database.MigrateAsync();
 }
+
+// ---------- Seed HR role/admin (do this ONCE here; remove duplicates elsewhere) ----------
 using (var scope = app.Services.CreateScope())
 {
     var roleMgr = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -131,7 +135,9 @@ using (var scope = app.Services.CreateScope())
         await userMgr.AddToRoleAsync(admin, "HR");
     }
 }
+
 app.UseStaticFiles();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -139,28 +145,22 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-
 app.UseCors("Frontend");
-
 app.UseRouting();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
-// MVC (HR area & default)
+// HR area (Razor)
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Dashboard}/{action=Index}/{id?}");
 
+// Default MVC
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 // APIs
 app.MapControllers();
-
-// Seed roles/admin
-await DbSeeder.SeedAsync(app.Services);
 
 app.Run();

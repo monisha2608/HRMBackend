@@ -2,44 +2,61 @@
 @{
     ViewData["Title"] = "New Job";
 }
-<div class="row">
-    <div class="col-lg-8">
+
+<div class="row justify-content-center">
+    <div class="col-12 col-lg-8">
         <div class="hr-card">
-            <div class="hr-card-header">New Job</div>
+            <!-- Header -->
+            <div class="hr-card-header mb-3 d-flex align-items-center justify-content-between">
+                <h1 class="fw-bold mb-0" style="font-size:2rem;
+                    background:linear-gradient(90deg,#ec4899,#8b5cf6,#06b6d4);
+                    -webkit-background-clip:text;
+                    -webkit-text-fill-color:transparent;">
+                    Create New Job
+                </h1>
+                <a asp-area="HR" asp-controller="Jobs" asp-action="Index"
+                   class="btn btn-bright btn-cyan">Back</a>
+            </div>
+
+            <!-- Body -->
             <div class="hr-card-body">
-                <form method="post" asp-area="HR" asp-controller="Jobs" asp-action="Create">
+                <form method="post" asp-area="HR" asp-controller="Jobs" asp-action="Create" novalidate>
                     @Html.AntiForgeryToken()
                     <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
+                    <!-- Title -->
                     <div class="mb-3">
-                        <label class="form-label">Title</label>
-                        <input asp-for="Title" class="form-control" />
+                        <label class="form-label fw-semibold">Title</label>
+                        <input asp-for="Title" class="form-control" placeholder="e.g., Software Developer" />
                         <span asp-validation-for="Title" class="text-danger"></span>
                     </div>
 
+                    <!-- Description -->
                     <div class="mb-3">
-                        <label class="form-label">Description</label>
+                        <label class="form-label fw-semibold">Description</label>
                         <textarea asp-for="Description" rows="8" class="form-control"></textarea>
                         <span asp-validation-for="Description" class="text-danger"></span>
                     </div>
 
+                    <!-- Row -->
                     <div class="row g-3">
                         <div class="col-md-4">
-                            <label class="form-label">Department</label>
+                            <label class="form-label fw-semibold">Department</label>
                             <input asp-for="Department" class="form-control" />
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Location</label>
+                            <label class="form-label fw-semibold">Location</label>
                             <input asp-for="Location" class="form-control" />
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label">Employment Type</label>
+                            <label class="form-label fw-semibold">Employment Type</label>
                             <input asp-for="EmploymentType" class="form-control" placeholder="Full-time / Contract" />
                         </div>
                     </div>
 
+                    <!-- Actions -->
                     <div class="mt-4 d-flex gap-2">
-                        <button class="btn btn-primary">Save</button>
+                        <button class="btn btn-bright btn-blue">Save</button>
                         <a class="btn btn-outline-light" asp-area="HR" asp-controller="Jobs" asp-action="Index">Cancel</a>
                     </div>
                 </form>

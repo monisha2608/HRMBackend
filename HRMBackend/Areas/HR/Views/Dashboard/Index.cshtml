@@ -1,24 +1,43 @@
-﻿<h2 class="mb-4">Dashboard</h2>
-<div class="row g-3 mb-4">
-    <div class="col-md-4"><div class="card p-4"><div class="text-muted">Total Jobs</div><div class="display-6">@ViewBag.TotalJobs</div></div></div>
-    <div class="col-md-4"><div class="card p-4"><div class="text-muted">Total Applications</div><div class="display-6">@ViewBag.TotalApps</div></div></div>
+﻿<h2 class="dashboard-title mb-4">HR Dashboard</h2>
+
+<div class="row g-4 mb-4">
     <div class="col-md-4">
-        <div class="card p-4">
-            <div class="text-muted">By Status</div>
+        <div class="hr-card p-4 text-center">
+            <div class="text-muted fw-semibold">Total Jobs</div>
+            <div class="display-6 fw-bold text-primary">@ViewBag.TotalJobs</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="hr-card p-4 text-center">
+            <div class="text-muted fw-semibold">Total Applications</div>
+            <div class="display-6 fw-bold text-success">@ViewBag.TotalApps</div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="hr-card p-4">
+            <div class="text-muted fw-semibold mb-3">By Status</div>
             @if (ViewBag.ByStatus is IDictionary<string, int> dict && dict.Count > 0)
             {
-                <ul class="mb-0">@foreach (var kv in dict){
-                <li>@kv.Key: @kv.Value</li>
+                <ul class="list-unstyled mb-0">
+                    @foreach (var kv in dict)
+                    {
+                        <li class="mb-2">
+                            <span class="hr-chip" data-status="@kv.Key">@kv.Key</span>
+                            <span class="fw-semibold text-dark ms-2">@kv.Value</span>
+                        </li>
+                    }
+                </ul>
             }
-</ul>
-                        }
-                        else
+            else
             {
-
-                <div class="text-secondary">No data</div>
+                <div class="text-secondary fst-italic">No data available</div>
             }
         </div>
     </div>
 </div>
 
-<a class="btn btn-bright btn-lime" asp-area="HR" asp-controller="Jobs" asp-action="Index">Manage Jobs</a>
+<a class="btn btn-bright btn-lime px-4 py-2 fw-semibold" asp-area="HR" asp-controller="Jobs" asp-action="Index">
+    Manage Jobs
+</a>

@@ -1,0 +1,33 @@
+﻿@{
+    ViewData["Title"] = "Create HR User";
+}
+
+<div class="hr-card mx-auto" style="max-width:600px;">
+    <h3 class="text-center mb-4 text-gradient fw-bold">Create HR Account</h3>
+
+    <form method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Email</label>
+            <input name="email" class="form-control" placeholder="Enter HR email address" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Full Name</label>
+            <input name="fullName" class="form-control" placeholder="Enter full name" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Password</label>
+            <input name="password" type="password" class="form-control" placeholder="Enter secure password" />
+        </div>
+
+        <button class="btn btn-lime btn-bright w-100 py-2 mt-2">Create Account</button>
+    </form>
+
+    @if (TempData["Msg"] != null)
+    {
+        <div class="alert alert-success mt-3 text-center">@TempData["Msg"]</div>
+    }
+</div>

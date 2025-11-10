@@ -34,5 +34,8 @@ namespace HRM.Backend.Models
 
         [MaxLength(25)]
         public string? ApplicantPhone { get; set; }
+        public int? Score { get; set; }           // for shortlisting
+        public string? ShortlistReason { get; set; }
+
     }
 }
