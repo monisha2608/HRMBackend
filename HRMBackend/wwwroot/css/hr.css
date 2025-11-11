@@ -270,7 +270,7 @@ body {
         border-color: #f1f5f9;
     }
 
-/* ---------- Status Chips (unchanged colors) ---------- */
+/* ---------- Status Chips ---------- */
 .hr-chip {
     display: inline-block;
     padding: .4rem .75rem;
@@ -317,7 +317,7 @@ body {
         color: #7f1d1d
     }
 
-    /* employment-type chips (optional) */
+    /* employment-type chips*/
     .hr-chip[data-status="Full-time"] {
         background: #dbeafe;
         color: #1e3a8a
@@ -337,7 +337,7 @@ body {
         background: #ecfdf5;
         color: #065f46
     }
-/* Keep everything in the Actions cell on one line */
+
 .actions-col {
     white-space: nowrap;
 }
@@ -390,10 +390,10 @@ body {
     color: #f3f4f6 !important;
     font-weight: 600;
     padding: 8px 18px;
-    border: 1.5px solid rgba(255, 255, 255, 0.35); /* make border visible */
+    border: 1.5px solid rgba(255, 255, 255, 0.35); 
     border-radius: 999px; /* pill shape */
     transition: all 0.25s ease;
-    background-color: transparent; /* transparent by default */
+    background-color: transparent; 
     display: inline-block;
 }
 
@@ -465,3 +465,4 @@ body {
         filter: hue-rotate(360deg);
     }
 }
+

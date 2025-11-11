@@ -26,9 +26,6 @@
             <div class="mb-3">
                 <label class="form-label fw-semibold">Email</label>
                 <div class="input-group glow-wrap">
-                    <span class="input-group-text bg-white border-0 border-end rounded-start-3 shadow-sm">
-                        <i class="bi bi-envelope text-muted"></i>
-                    </span>
                     <input name="email" type="email"
                            class="form-control glow-input border-0 shadow-sm"
                            placeholder="you@company.com" autocomplete="username" required />
@@ -38,29 +35,70 @@
             <div class="mb-2">
                 <label class="form-label fw-semibold">Password</label>
                 <div class="input-group glow-wrap">
-                    <span class="input-group-text bg-white border-0 border-end rounded-start-3 shadow-sm">
-                        <i class="bi bi-shield-lock text-muted"></i>
-                    </span>
-                    <input name="password" type="password"
+                    <input id="password" name="password" type="password"
                            class="form-control glow-input border-0 shadow-sm"
                            placeholder="••••••••" autocomplete="current-password" required />
+                    <button type="button" class="btn border-0 shadow-none"
+                            id="togglePassword" tabindex="-1" aria-label="Show password"
+                            style="background:transparent; transition:all 0.3s ease;">
+                        <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="28" height="28"
+                             viewBox="0 0 16 16" fill="#ff4d2d"
+                             style="filter: drop-shadow(0 0 6px rgba(255,77,4));
+                                    transition: all 0.3s ease;">
+                            <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5Z" />
+                            <circle cx="8" cy="8" r="2.5" />
+                        </svg>
+                    </button>
                 </div>
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="remember" name="remember" />
-                    <label class="form-check-label" for="remember">Remember me</label>
-                </div>
-                
             </div>
 
             <button class="btn btn-bright btn-orangered w-100 py-2 neon-btn">
                 Sign in
             </button>
-
-            
-            
         </form>
     </div>
 </div>
+
+<script>
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+
+    const eyeSVG = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
+           viewBox="0 0 16 16" fill="#ff4d2d"
+           style="filter: drop-shadow(0 0 6px rgba(255,77,45,0.7));
+                  transition: all 0.3s ease;">
+        <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5Z"></path>
+        <circle cx="8" cy="8" r="2.5"></circle>
+      </svg>`;
+
+    const eyeSlashSVG = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28"
+           viewBox="0 0 16 16" 
+           style="filter: drop-shadow(0 0 6px rgba(255,77,45,0.7));
+                  transition: all 0.3s ease;">
+        <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5Z"></path>
+        <circle cx="8" cy="8" r="2.5"></circle>
+        <line x1="2" y1="2" x2="14" y2="14" stroke="#ff4d2d" stroke-width="1.8" stroke-linecap="round"></line>
+      </svg>`;
+
+    togglePassword.addEventListener("click", function () {
+        const isPassword = passwordInput.getAttribute("type") === "password";
+        passwordInput.setAttribute("type", isPassword ? "text" : "password");
+        this.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
+        this.innerHTML = isPassword ? eyeSlashSVG : eyeSVG;
+    });
+
+    // Neon hover effect
+    togglePassword.addEventListener("mouseenter", function () {
+        this.querySelector("svg").style.filter = "drop-shadow(0 0 12px rgba(255,77,45,1))";
+        this.querySelector("svg").setAttribute("fill", "#ff6a3c");
+        this.style.transform = "scale(1.2)";
+    });
+
+    togglePassword.addEventListener("mouseleave", function () {
+        this.querySelector("svg").style.filter = "drop-shadow(0 0 6px rgba(255,77,45,0.7))";
+        this.querySelector("svg").setAttribute("fill", "#ff4d2d");
+        this.style.transform = "scale(1)";
+    });
+</script>

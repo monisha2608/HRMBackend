@@ -80,7 +80,7 @@ builder.Services.AddCors(options =>
             // allow any vercel preview domain
             try
             {
-                var host = new Uri(origin).Host; // e.g. proj-abc123-user.vercel.app
+                var host = new Uri(origin).Host; 
                 if (host.EndsWith(".vercel.app", StringComparison.OrdinalIgnoreCase))
                     return true;
             }
@@ -100,7 +100,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // ---------- App Services (DI) ----------
-// IMPORTANT: register ONCE with correct lifetimes
+
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IEmailSenderEx, SmtpEmailSender>();           // was duplicate (Scoped + Singleton) → keep Scoped
 builder.Services.AddScoped<IShortlistScorer, KeywordShortlistScorer>();  // ok as Scoped

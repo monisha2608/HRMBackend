@@ -24,7 +24,7 @@ namespace HRM.Backend.Models
         [MaxLength(5000)]
         public string? CoverLetter { get; set; }
 
-        // NEW: contact fields captured from the form (guest or explicit capture)
+        
         [MaxLength(120)]
         public string? ApplicantFullName { get; set; }
 

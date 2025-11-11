@@ -1,6 +1,5 @@
 ﻿using HRM.Backend.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace HRMBackend.Data
 {

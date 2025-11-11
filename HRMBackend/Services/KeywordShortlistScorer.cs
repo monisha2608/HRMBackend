@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-
-namespace HRM.Backend.Services
+﻿namespace HRM.Backend.Services
 {
     public class KeywordShortlistScorer : IShortlistScorer
     {

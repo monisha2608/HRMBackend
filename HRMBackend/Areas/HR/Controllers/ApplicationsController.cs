@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using Microsoft.Extensions.DependencyInjection;
-using HRM.Backend.Services; // <-- for IEmailSenderEx
+using HRM.Backend.Services;
 
 namespace HRMBackend.Areas.HR.Controllers
 {
@@ -65,8 +64,8 @@ namespace HRMBackend.Areas.HR.Controllers
                     Status = a.Status.ToString(),
                     AppliedOn = a.AppliedOn,
                     ResumeUrl = a.ResumeUrl,
-                    Score = a.Score,                 // NEW
-                    ShortlistReason = a.ShortlistReason        // NEW
+                    Score = a.Score,                 
+                    ShortlistReason = a.ShortlistReason        
                 })
                 .ToListAsync();
 
@@ -201,7 +200,6 @@ namespace HRMBackend.Areas.HR.Controllers
             public DateTime AppliedOn { get; set; }
             public string? ResumeUrl { get; set; }
 
-            // NEW — to display auto-shortlist info on list page
             public int? Score { get; set; }
             public string? ShortlistReason { get; set; }
         }

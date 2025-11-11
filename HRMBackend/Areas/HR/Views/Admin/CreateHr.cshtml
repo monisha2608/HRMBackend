@@ -2,7 +2,7 @@
     ViewData["Title"] = "Create HR User";
 }
 
-<div class="hr-card mx-auto" style="max-width:600px;">
+<div class="hr-card mx-auto" style="max-width:600px; position:relative;">
     <h3 class="text-center mb-4 text-gradient fw-bold">Create HR Account</h3>
 
     <form method="post">
@@ -10,20 +10,37 @@
 
         <div class="mb-3">
             <label class="form-label fw-semibold">Email</label>
-            <input name="email" class="form-control" placeholder="Enter HR email address" />
+            <input name="email" class="form-control" placeholder="Enter HR email address" required />
         </div>
 
         <div class="mb-3">
             <label class="form-label fw-semibold">Full Name</label>
-            <input name="fullName" class="form-control" placeholder="Enter full name" />
+            <input name="fullName" class="form-control" placeholder="Enter full name" required />
         </div>
 
-        <div class="mb-3">
+        <div class="mb-3 position-relative">
             <label class="form-label fw-semibold">Password</label>
-            <input name="password" type="password" class="form-control" placeholder="Enter secure password" />
+            <div class="input-group">
+                <input id="password" name="password" type="password" class="form-control"
+                       placeholder="Enter secure password" autocomplete="new-password" required />
+                <button type="button" id="togglePassword" class="btn border-0 shadow-none"
+                        tabindex="-1" aria-label="Show password"
+                        style="background:transparent; transition:all 0.3s ease;">
+                    <!-- Inline lime-green eye -->
+                    <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="26" height="26"
+                         viewBox="0 0 16 16" fill="#32CD32"
+                         style="filter: drop-shadow(0 0 6px rgba(50,205,50,0.7));
+                                transition: all 0.3s ease;">
+                        <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5Z" />
+                        <circle cx="8" cy="8" r="2.5" />
+                    </svg>
+                </button>
+            </div>
         </div>
 
-        <button class="btn btn-lime btn-bright w-100 py-2 mt-2">Create Account</button>
+        <button class="btn btn-lime btn-bright w-100 py-2 mt-2 neon-btn">
+            Create Account
+        </button>
     </form>
 
     @if (TempData["Msg"] != null)
@@ -31,3 +48,48 @@
         <div class="alert alert-success mt-3 text-center">@TempData["Msg"]</div>
     }
 </div>
+
+<script>
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+
+    // SVGs for eye and eye-slash (lime glow)
+    const eyeSVG = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"
+           viewBox="0 0 16 16" fill="#32CD32"
+           style="filter: drop-shadow(0 0 6px rgba(50,205,50,0.7));
+                  transition: all 0.3s ease;">
+        <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5Z"></path>
+        <circle cx="8" cy="8" r="2.5"></circle>
+      </svg>`;
+
+    const eyeSlashSVG = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26"
+           viewBox="0 0 16 16" fill="#32CD32"
+           style="filter: drop-shadow(0 0 6px rgba(50,205,50,0.7));
+                  transition: all 0.3s ease;">
+        <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5Z"></path>
+        <circle cx="8" cy="8" r="2.5"></circle>
+        <line x1="2" y1="2" x2="14" y2="14" stroke="#32CD32" stroke-width="1.8" stroke-linecap="round"></line>
+      </svg>`;
+
+    togglePassword.addEventListener("click", function () {
+        const isPassword = passwordInput.getAttribute("type") === "password";
+        passwordInput.setAttribute("type", isPassword ? "text" : "password");
+        this.setAttribute("aria-label", isPassword ? "Hide password" : "Show password");
+        this.innerHTML = isPassword ? eyeSlashSVG : eyeSVG;
+    });
+
+    // Neon hover effect for the button icon
+    togglePassword.addEventListener("mouseenter", function () {
+        this.querySelector("svg").style.filter = "drop-shadow(0 0 12px rgba(50,205,50,1))";
+        this.querySelector("svg").setAttribute("fill", "#66ff66");
+        this.style.transform = "scale(1.2)";
+    });
+
+    togglePassword.addEventListener("mouseleave", function () {
+        this.querySelector("svg").style.filter = "drop-shadow(0 0 6px rgba(50,205,50,0.7))";
+        this.querySelector("svg").setAttribute("fill", "#32CD32");
+        this.style.transform = "scale(1)";
+    });
+</script>

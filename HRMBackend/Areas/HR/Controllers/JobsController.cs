@@ -2,7 +2,6 @@
 using HRM.Backend.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using HRMBackend.Areas.HR.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
@@ -70,7 +69,7 @@ namespace HRMBackend.Areas.HR.Controllers
             // Set server fields
             model.PostedByUserId = uid!;
             model.PostedOn = DateTime.UtcNow;
-            model.PostedByUser = null;  // <-- important if the nav is [Required] or non-nullable
+            model.PostedByUser = null;  
 
             _db.Jobs.Add(model);
             await _db.SaveChangesAsync();
