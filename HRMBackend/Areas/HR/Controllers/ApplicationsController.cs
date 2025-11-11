@@ -65,7 +65,9 @@ namespace HRMBackend.Areas.HR.Controllers
                     AppliedOn = a.AppliedOn,
                     ResumeUrl = a.ResumeUrl,
                     Score = a.Score,                 
-                    ShortlistReason = a.ShortlistReason        
+                    ShortlistReason = a.ShortlistReason,
+                    IsInternal = a.IsInternal,
+                    EmployeeNumber = a.EmployeeNumber
                 })
                 .ToListAsync();
 
@@ -202,6 +204,9 @@ namespace HRMBackend.Areas.HR.Controllers
 
             public int? Score { get; set; }
             public string? ShortlistReason { get; set; }
+            public bool IsInternal { get; set; }
+            public string? EmployeeNumber { get; set; }
+
         }
     }
 }

@@ -21,5 +21,8 @@ namespace HRM.Backend.Dtos.Applications
 
         [Required, StringLength(5000)]
         public string CoverLetter { get; set; } = default!;
+
+        public bool IsInternal { get; set; }
+        public string? EmployeeNumber { get; set; }
     }
 }

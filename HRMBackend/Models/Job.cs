@@ -29,5 +29,6 @@ namespace HRM.Backend.Models
 
         [ForeignKey(nameof(PostedByUserId))]
         public AppUser PostedByUser { get; set; } = default!;
+        public bool IsInternal { get; set; }
     }
 }

@@ -41,6 +41,13 @@ namespace HRMBackend.Controllers
             var job = await _db.Jobs.FirstOrDefaultAsync(j => j.Id == req.JobId);
             if (job == null) return BadRequest("Invalid JobId.");
 
+            // --- Internal candidate rules ---
+            // If the job is marked internal-only, force the checkbox + employee number.
+           
+            // If they ticked 'internal', still validate employee number.
+            if (req.IsInternal && string.IsNullOrWhiteSpace(req.EmployeeNumber))
+                return BadRequest("Please provide your employee number.");
+
             if (req.Resume is null || !IsAllowed(req.Resume))
                 return BadRequest("Invalid resume file (only PDF/DOC/DOCX, <= 10 MB).");
 
@@ -78,7 +85,10 @@ namespace HRMBackend.Controllers
                 CoverLetter = req.CoverLetter,
                 ApplicantFullName = req.FullName,
                 ApplicantEmail = req.Email,
-                ApplicantPhone = req.Phone
+                ApplicantPhone = req.Phone,
+
+                IsInternal = req.IsInternal,
+                EmployeeNumber = req.IsInternal ? req.EmployeeNumber?.Trim() : null
             };
 
             _db.Applications.Add(app);
@@ -86,8 +96,11 @@ namespace HRMBackend.Controllers
 
             // Score + auto-shortlist
             var (score, reason) = _scorer.Score(job.Description ?? string.Empty, app.CoverLetter ?? string.Empty);
+
+            // OPTIONAL: small bonus for internal candidates (tweak as you like)
+            if (app.IsInternal) score = Math.Min(100, score + 5);
             app.Score = score;
-            app.ShortlistReason = reason;
+            app.ShortlistReason = reason + (app.IsInternal? " (internal+5)" : "");
 
             var threshold = _cfg.GetValue<int>("Shortlist:DefaultThreshold", 60);
             if (score >= threshold && app.Status == ApplicationStatus.Applied)
@@ -107,7 +120,7 @@ namespace HRMBackend.Controllers
 
             await _db.SaveChangesAsync();
 
-            // Email candidate (if email present)
+            // Email candidate (best-effort)
             if (!string.IsNullOrWhiteSpace(app.ApplicantEmail))
             {
                 try
@@ -118,10 +131,7 @@ namespace HRMBackend.Controllers
                         MailTemplates.ApplicationReceived(app.ApplicantFullName ?? "Candidate", job.Title)
                     );
                 }
-                catch
-                {
-                    // swallow email errors so application submission still succeeds
-                }
+                catch { /* ignore mail errors */ }
             }
 
             return CreatedAtAction(nameof(GetById), new { id = app.Id }, new { app.Id });
@@ -147,7 +157,11 @@ namespace HRMBackend.Controllers
                 a.ApplicantFullName,
                 a.ApplicantEmail,
                 a.ApplicantPhone,
-                jobTitle = a.Job?.Title
+                jobTitle = a.Job?.Title,
+
+                // NEW —
+                isInternal = a.IsInternal,
+                employeeNumber = a.EmployeeNumber 
             });
         }
 
@@ -192,7 +206,10 @@ namespace HRMBackend.Controllers
                     jobTitle = a.Job!.Title,
                     appliedOn = a.AppliedOn,
                     status = a.Status.ToString(),
-                    resumeUrl = a.ResumeUrl
+                    resumeUrl = a.ResumeUrl,
+
+                    // NEW — handy on candidate dashboard
+                    isInternal = a.IsInternal
                 })
                 .ToListAsync();
 

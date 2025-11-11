@@ -36,6 +36,8 @@ namespace HRM.Backend.Models
         public string? ApplicantPhone { get; set; }
         public int? Score { get; set; }           // for shortlisting
         public string? ShortlistReason { get; set; }
+        public bool IsInternal { get; set; }                 
+        public string? EmployeeNumber { get; set; }
 
     }
 }
