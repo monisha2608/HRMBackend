@@ -45,6 +45,13 @@
                     <a class="nav-link hr-nav-pill @(IsActive("HR", "Admin", "CreateHr") ? "active" : "")"
                        asp-area="HR" asp-controller="Admin" asp-action="CreateHr">Create HR</a>
                 </li>
+
+                <a class="nav-link hr-nav-pill @(IsActive("HR", "Onboarding") ? "active" : "")"
+                   asp-area="HR" asp-controller="Onboarding" asp-action="Index">
+                    Onboarding
+                </a>
+                
+                
                 <li class="nav-item">
                     <form method="post" asp-area="HR" asp-controller="Account" asp-action="Logout">
                         <button class="btn btn-sm logout-btn fw-semibold px-3 py-1">Sign out</button>

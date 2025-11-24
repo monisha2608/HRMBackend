@@ -1,4 +1,4 @@
-﻿using HRM.Backend.Data;
+﻿using HRMBackend.Data;
 using HRM.Backend.Models;
 using HRMBackend.Dtos;
 using Microsoft.AspNetCore.Authorization;

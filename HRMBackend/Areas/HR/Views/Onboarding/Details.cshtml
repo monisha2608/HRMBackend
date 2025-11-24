@@ -1,0 +1,173 @@
+﻿@model HRMBackend.Areas.HR.Controllers.OnboardingController.PlanDetailsVM
+@{
+    ViewData["Title"] = "Onboarding";
+
+    var total = Model.Tasks.Count;
+    var done = Model.Tasks.Count(t => t.IsCompleted);
+    var progress = total == 0 ? 0 : (int)Math.Round(100.0 * done / total);
+}
+
+<div class="mb-3 d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div>
+        <h2 class="dashboard-title mb-1">Onboarding – @Model.Plan.CandidateName</h2>
+        <div class="small-muted">
+            Start: @Model.Plan.StartDate.ToLocalTime().ToString("MMM d, yyyy")
+            @if (Model.Plan.ApplicationId.HasValue)
+            {
+                @: · Application #@Model.Plan.ApplicationId
+            }
+        </div>
+    </div>
+    <a class="btn btn-outline-secondary"
+       asp-area="HR" asp-controller="Onboarding" asp-action="Index">
+        Back to list
+    </a>
+</div>
+
+@if (TempData["Msg"] is string msg)
+{
+    <div class="alert alert-ghost mb-3">@msg</div>
+}
+@if (TempData["Err"] is string err)
+{
+    <div class="alert alert-danger mb-3">@err</div>
+}
+
+<div class="row g-4">
+    <!-- Progress + tasks table -->
+    <div class="col-lg-8">
+        <div class="hr-card mb-3">
+            <div class="mb-2 d-flex justify-content-between align-items-center">
+                <div class="fw-semibold">Overall Progress</div>
+                <div class="small-muted">@progress% · @done / @total tasks completed</div>
+            </div>
+            <div class="progress" style="height: 12px;">
+                <div class="progress-bar"
+                     role="progressbar"
+                     style="width:@progress%;background:linear-gradient(90deg,#22c55e,#22d3ee);"
+                     aria-valuenow="@progress" aria-valuemin="0" aria-valuemax="100">
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-responsive">
+                <table class="table hr-table align-middle">
+                    <thead>
+                        <tr>
+                            <th style="width:32%">Task</th>
+                            <th style="width:20%">Assigned To</th>
+                            <th style="width:18%">Due Date</th>
+                            <th style="width:12%">Status</th>
+                            <th class="text-end" style="width:18%">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Tasks.Any())
+                        {
+                            foreach (var t in Model.Tasks)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">@t.Name</td>
+                                    <td>@(string.IsNullOrWhiteSpace(t.AssignedTo) ? "—" : t.AssignedTo)</td>
+                                    <td>
+                                        @if (t.DueDate.HasValue)
+                                        {
+                                            @t.DueDate.Value.ToLocalTime().ToString("MMM d, yyyy")
+                                        }
+                                        else
+                                        {
+                                            @:—
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (t.IsCompleted)
+                                        {
+                                            <span class="badge rounded-pill bg-success-subtle text-success fw-semibold">
+                                                Done
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge rounded-pill bg-warning-subtle text-warning fw-semibold">
+                                                Pending
+                                            </span>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-inline-flex gap-2">
+                                            <form method="post"
+                                                  asp-area="HR" asp-controller="Onboarding" asp-action="ToggleTask">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="taskId" value="@t.Id" />
+                                                <input type="hidden" name="planId" value="@Model.Plan.Id" />
+                                                <input type="hidden" name="isCompleted" value="@(!t.IsCompleted)" />
+                                                <button class="btn btn-sm btn-teal btn-bright">
+                                                    @(t.IsCompleted ? "Mark Pending" : "Mark Done")
+                                                </button>
+                                            </form>
+
+                                            <form method="post"
+                                                  asp-area="HR" asp-controller="Onboarding" asp-action="DeleteTask"
+                                                  onsubmit="return confirm('Delete this task?');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="taskId" value="@t.Id" />
+                                                <input type="hidden" name="planId" value="@Model.Plan.Id" />
+                                                <button class="btn btn-sm btn-rose btn-bright">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center small-muted py-4">
+                                    No tasks yet. Add the first onboarding task on the right.
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add task card -->
+    <div class="col-lg-4">
+        <div class="hr-card">
+            <div class="hr-card-header mb-2">
+                <h5 class="mb-0">Add Task</h5>
+                <div class="small-muted">Define task, owner, and due date</div>
+            </div>
+            <div class="hr-card-body">
+                <form method="post" asp-area="HR" asp-controller="Onboarding" asp-action="AddTask">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="planId" value="@Model.Plan.Id" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Task Name</label>
+                        <input name="name" class="form-control" placeholder="e.g., Collect signed contract" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Assigned To (optional)</label>
+                        <input name="assignedTo" class="form-control" placeholder="e.g., HR Coordinator" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Due Date (optional)</label>
+                        <input name="dueDate" type="date" class="form-control" />
+                    </div>
+
+                    <button class="btn btn-blue btn-bright w-100">
+                        Add Task
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

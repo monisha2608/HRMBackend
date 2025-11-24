@@ -1,0 +1,63 @@
+﻿@model HRMBackend.Models.OnboardingPlan
+@{
+    var hired = ViewBag.HiredCandidates as List<HRMBackend.Areas.HR.Controllers.OnboardingController.HiredCandidateOption> ?? new();
+}
+
+
+<div class="row">
+    <div class="col-lg-7">
+        <div class="hr-card">
+            <div class="hr-card-header mb-2">
+                <h3 class="mb-0">New Onboarding Plan</h3>
+                <div class="small-muted">Create an onboarding plan for a hired candidate</div>
+            </div>
+            <div class="hr-card-body">
+                <form method="post" asp-area="HR" asp-controller="Onboarding" asp-action="Create">
+                    @Html.AntiForgeryToken()
+                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Hired Candidate (Application)</label>
+                        <select asp-for="ApplicationId" class="form-select">
+                            <option value="">Select a hired candidate…</option>
+                            @foreach (var c in hired)
+                            {
+                                <option value="@c.ApplicationId">@c.Label</option>
+                            }
+                        </select>
+                        <span asp-validation-for="ApplicationId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Candidate Name (display)</label>
+                        <input asp-for="CandidateName" class="form-control" />
+                        <span asp-validation-for="CandidateName" class="text-danger"></span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Application Id (optional)</label>
+                            <input asp-for="ApplicationId" class="form-control" />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Start Date</label>
+                            <input asp-for="StartDate" type="date" class="form-control"
+                                   value="@Model.StartDate.ToLocalTime().ToString("yyyy-MM-dd")" />
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <button class="btn btn-blue btn-bright">Save Plan</button>
+                        <a class="btn btn-outline-secondary" asp-area="HR" asp-controller="Onboarding" asp-action="Index">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="ValidationScriptsPartial" />
+}

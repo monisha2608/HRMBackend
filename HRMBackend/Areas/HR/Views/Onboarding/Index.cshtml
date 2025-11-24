@@ -1,0 +1,108 @@
+﻿@model IEnumerable<HRMBackend.Areas.HR.Controllers.OnboardingController.PlanRow>
+@{
+    ViewData["Title"] = "Onboarding";
+    var q = ViewBag.Query as string ?? "";
+}
+
+<div class="hr-card mb-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="mb-0 dashboard-title">Onboarding Plans</h2>
+            <div class="small-muted">Track candidate onboarding tasks and progress</div>
+        </div>
+        <a class="btn btn-bright btn-lime" asp-area="HR" asp-controller="Onboarding" asp-action="Create">
+            New Plan
+        </a>
+    </div>
+
+    <form method="get" class="hr-toolbar d-flex flex-wrap gap-2 align-items-center">
+        <input class="form-control" style="max-width:320px"
+               name="q"
+               value="@q"
+               placeholder="Search by candidate name" />
+        <button class="btn btn-slate btn-bright">Search</button>
+    </form>
+</div>
+
+<div class="table-container">
+    <div class="table-responsive">
+        <table class="table hr-table align-middle">
+            <thead>
+                <tr>
+                    <th>Candidate</th>
+                    <th>Application #</th>
+                    <th>Start Date</th>
+                    <th>Tasks</th>
+                    <th>Progress</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Any())
+                {
+                    foreach (var p in Model)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@p.CandidateName</td>
+                            <td>@(p.ApplicationId?.ToString() ?? "—")</td>
+                            <td>@p.StartDate.ToLocalTime().ToString("MMM d, yyyy")</td>
+                            <td>
+                                <span class="badge bg-slate-100 text-dark">
+                                    @p.CompletedTasks / @p.TotalTasks
+                                </span>
+                            </td>
+                            <td style="min-width:180px;">
+                                <div class="d-flex flex-column">
+                                    <div class="d-flex justify-content-between small-muted mb-1">
+                                        <span>@p.Progress%</span>
+                                        <span>
+                                            @(p.Progress >= 100 ? "Complete" :
+                                                                                p.Progress >= 70 ? "On track" :
+                                                                                p.Progress >= 30 ? "In progress" : "Starting")
+                                </span>
+                            </div>
+                            <div class="progress" style="height: 8px;">
+                                <div class="progress-bar"
+                                     role="progressbar"
+                                     style="width:@p.Progress%;background:linear-gradient(90deg,#22c55e,#22d3ee);"
+                                     aria-valuenow="@p.Progress"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="text-end">
+                        <div class="d-inline-flex gap-2">
+                            <a class="btn btn-sm btn-blue btn-bright"
+                               asp-area="HR" asp-controller="Onboarding" asp-action="Details"
+                               asp-route-id="@p.Id">
+                                View
+                            </a>
+
+                                    <form method="post"
+                                          asp-area="HR" asp-controller="Onboarding" asp-action="DeletePlan"
+                                          asp-route-id="@p.Id"
+                                          onsubmit="return confirm('Delete this onboarding plan?');">
+                                        @Html.AntiForgeryToken()
+                                        <button class="btn btn-sm btn-rose btn-bright">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                                }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center small-muted py-4">
+                            No onboarding plans yet.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HRMBackend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250930061255_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20251124082813_NewOnboardingDone")]
+    partial class NewOnboardingDone
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -101,22 +101,45 @@ namespace HRMBackend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("ApplicantEmail")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("ApplicantFullName")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<string>("ApplicantPhone")
+                        .HasMaxLength(25)
+                        .HasColumnType("nvarchar(25)");
+
                     b.Property<DateTime>("AppliedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CandidateUserId")
-                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("CoverLetter")
+                        .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("EmployeeNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsInternal")
+                        .HasColumnType("bit");
 
                     b.Property<int>("JobId")
                         .HasColumnType("int");
 
                     b.Property<string>("ResumeUrl")
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Score")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ShortlistReason")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -128,6 +151,70 @@ namespace HRMBackend.Migrations
                     b.HasIndex("JobId");
 
                     b.ToTable("Applications");
+                });
+
+            modelBuilder.Entity("HRM.Backend.Models.ApplicationNote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AuthorUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("ApplicationNotes");
+                });
+
+            modelBuilder.Entity("HRM.Backend.Models.ApplicationStatusHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ApplicationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ChangedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ChangedByUserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NewStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OldStatus")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ApplicationId");
+
+                    b.ToTable("ApplicationStatusHistories");
                 });
 
             modelBuilder.Entity("HRM.Backend.Models.Job", b =>
@@ -150,6 +237,9 @@ namespace HRMBackend.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
+                    b.Property<bool>("IsInternal")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Location")
                         .HasMaxLength(80)
                         .HasColumnType("nvarchar(80)");
@@ -171,6 +261,66 @@ namespace HRMBackend.Migrations
                     b.HasIndex("PostedByUserId");
 
                     b.ToTable("Jobs");
+                });
+
+            modelBuilder.Entity("HRMBackend.Models.OnboardingPlan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ApplicationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CandidateName")
+                        .IsRequired()
+                        .HasMaxLength(160)
+                        .HasColumnType("nvarchar(160)");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("OnboardingPlans");
+                });
+
+            modelBuilder.Entity("HRMBackend.Models.OnboardingTask", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AssignedTo")
+                        .HasMaxLength(120)
+                        .HasColumnType("nvarchar(120)");
+
+                    b.Property<DateTime?>("CompletedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("DueDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("PlanId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PlanId");
+
+                    b.ToTable("OnboardingTasks");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -311,8 +461,7 @@ namespace HRMBackend.Migrations
                     b.HasOne("HRM.Backend.Models.AppUser", "CandidateUser")
                         .WithMany()
                         .HasForeignKey("CandidateUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("HRM.Backend.Models.Job", "Job")
                         .WithMany()
@@ -325,6 +474,28 @@ namespace HRMBackend.Migrations
                     b.Navigation("Job");
                 });
 
+            modelBuilder.Entity("HRM.Backend.Models.ApplicationNote", b =>
+                {
+                    b.HasOne("HRM.Backend.Models.Application", "Application")
+                        .WithMany()
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+                });
+
+            modelBuilder.Entity("HRM.Backend.Models.ApplicationStatusHistory", b =>
+                {
+                    b.HasOne("HRM.Backend.Models.Application", "Application")
+                        .WithMany()
+                        .HasForeignKey("ApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Application");
+                });
+
             modelBuilder.Entity("HRM.Backend.Models.Job", b =>
                 {
                     b.HasOne("HRM.Backend.Models.AppUser", "PostedByUser")
@@ -334,6 +505,17 @@ namespace HRMBackend.Migrations
                         .IsRequired();
 
                     b.Navigation("PostedByUser");
+                });
+
+            modelBuilder.Entity("HRMBackend.Models.OnboardingTask", b =>
+                {
+                    b.HasOne("HRMBackend.Models.OnboardingPlan", "Plan")
+                        .WithMany("Tasks")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Plan");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -385,6 +567,11 @@ namespace HRMBackend.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("HRMBackend.Models.OnboardingPlan", b =>
+                {
+                    b.Navigation("Tasks");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,8 +1,9 @@
 ﻿using HRM.Backend.Models;
+using HRMBackend.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace HRM.Backend.Data
+namespace HRMBackend.Data
 {
     public class ApplicationDbContext : IdentityDbContext<AppUser>
     {
@@ -13,6 +14,10 @@ namespace HRM.Backend.Data
         public DbSet<Application> Applications => Set<Application>();
         public DbSet<ApplicationStatusHistory> ApplicationStatusHistories => Set<ApplicationStatusHistory>();
         public DbSet<ApplicationNote> ApplicationNotes => Set<ApplicationNote>();
+        public DbSet<OnboardingPlan> OnboardingPlans { get; set; } = null!;
+        public DbSet<OnboardingTask> OnboardingTasks { get; set; } = null!;
+
+
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -21,6 +26,11 @@ namespace HRM.Backend.Data
             builder.Entity(JobEntity());
 
             builder.Entity(ApplicationEntity());
+            builder.Entity<OnboardingPlan>()
+       .HasMany(p => p.Tasks)
+       .WithOne(t => t.Plan)
+       .HasForeignKey(t => t.PlanId)
+       .OnDelete(DeleteBehavior.Cascade);
         }
 
         private static Action<Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Job>> JobEntity()
