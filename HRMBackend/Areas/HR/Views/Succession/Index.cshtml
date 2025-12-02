@@ -1,0 +1,166 @@
+﻿@model IEnumerable<HRMBackend.Areas.HR.Controllers.SuccessionController.RowVM>
+
+@{
+    ViewData["Title"] = "Succession";
+}
+
+<div class="hr-card mb-3">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+        <div>
+            <h2 class="hr-title-lg mb-0">Succession &amp; Promotion Planning</h2>
+            <div class="hr-subtitle">
+                Track promotion readiness and risk-of-loss for hired candidates.
+            </div>
+        </div>
+
+        <form method="get" class="d-flex align-items-center gap-2 flex-wrap">
+            <input name="q"
+                   value="@ViewBag.Query"
+                   class="form-control"
+                   style="max-width:260px"
+                   placeholder="Search name / job / email" />
+            <button class="btn btn-slate btn-bright">Filter</button>
+        </form>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table hr-table align-middle mb-0">
+        <thead>
+            <tr>
+                <th style="width:20%">Candidate</th>
+                <th style="width:17%">Current Role</th>
+                <th style="width:23%">Potential Next Role</th>
+                <th style="width:12%">Readiness</th>
+                <th style="width:12%">Risk of loss</th>
+                <th style="width:16%">Notes</th>
+                <th class="text-end" style="width:10%">Save</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="7" class="text-center small-muted py-4">
+                        No hired candidates found.
+                    </td>
+                </tr>
+            }
+            else
+            {
+                foreach (var r in Model)
+                {
+                    <tr>
+                        <!-- Candidate -->
+                        <td>
+                            <div class="fw-semibold">@r.CandidateName</div>
+                            <div class="small-muted">
+                                Application #@r.ApplicationId
+                            </div>
+                            <div class="small text-muted mt-1">
+                                @if (r.LastUpdatedUtc.HasValue)
+                                {
+                                    @:Updated @r.LastUpdatedUtc.Value.ToLocalTime().ToString("MMM dd, yyyy")
+                                }
+                                else
+                                {
+                                    @:Not yet saved
+                                }
+                            </div>
+                        </td>
+
+                        <!-- Current role (read-only text) -->
+                        <td>
+                            <div class="fw-semibold">
+                                @(!string.IsNullOrWhiteSpace(r.CurrentRole) ? r.CurrentRole : "—")
+                            </div>
+                            <div class="small-muted">
+                                @r.JobTitle
+                            </div>
+                        </td>
+
+                        <!-- Editable form for this row -->
+                        <td colspan="5" class="p-0">
+                            <form method="post"
+                                  asp-area="HR"
+                                  asp-controller="Succession"
+                                  asp-action="Save"
+                                  class="d-flex flex-wrap align-items-stretch gap-2 px-2 py-3">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="applicationId" value="@r.ApplicationId" />
+
+                                <!-- Potential next role -->
+                                <div class="flex-grow-1" style="min-width:180px; max-width:230px;">
+                                    <input name="potentialNextRole"
+                                           class="form-control form-control-sm"
+                                           placeholder="e.g., Senior Developer / Team Lead"
+                                           value="@r.PotentialNextRole" />
+                                </div>
+
+                                <!-- Ready in -->
+                                <div style="min-width:140px;">
+                                    <select name="readyIn"
+                                            class="form-select form-select-sm">
+                                        @foreach (var opt in new[] {
+                                                                "0–6 months",
+                                                                "6–12 months",
+                                                                "Within 1–2 years",
+                                                                "2+ years"
+                                                                })
+                                        {
+                                            <option value="@opt" selected="@(opt == r.ReadyIn)">
+                                                @opt
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <!-- Readiness -->
+                                <div style="min-width:120px;">
+                                    <select name="readiness"
+                                            class="form-select form-select-sm">
+                                        @foreach (var opt in new[] { "Low", "Medium", "High" })
+                                        {
+                                            <option value="@opt" selected="@(opt == r.Readiness)">
+                                                @opt
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <!-- Risk of loss -->
+                                <div style="min-width:120px;">
+                                    <select name="riskOfLoss"
+                                            class="form-select form-select-sm">
+                                        @foreach (var opt in new[] { "Low", "Medium", "High" })
+                                        {
+                                            <option value="@opt" selected="@(opt == r.RiskOfLoss)">
+                                                @opt
+                                            </option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <!-- Notes -->
+                                <div class="flex-grow-1" style="min-width:200px; max-width:260px;">
+                                    <textarea name="notes"
+                                      rows="2"
+                                      class="form-control form-control-sm"
+                                      placeholder="Development actions / next steps">@r.Notes</textarea>
+                                </div>
+
+                                <!-- Save button -->
+                                <div class="ms-auto d-flex align-items-center">
+                                    <button type="submit"
+                                            class="btn btn-blue btn-bright btn-sm px-3">
+                                        Save
+                                    </button>
+                                </div>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

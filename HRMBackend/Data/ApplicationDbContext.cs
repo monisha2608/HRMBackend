@@ -16,6 +16,8 @@ namespace HRMBackend.Data
         public DbSet<ApplicationNote> ApplicationNotes => Set<ApplicationNote>();
         public DbSet<OnboardingPlan> OnboardingPlans { get; set; } = null!;
         public DbSet<OnboardingTask> OnboardingTasks { get; set; } = null!;
+        public DbSet<SuccessionRecord> SuccessionRecords { get; set; } = null!;
+
 
 
 
@@ -27,10 +29,14 @@ namespace HRMBackend.Data
 
             builder.Entity(ApplicationEntity());
             builder.Entity<OnboardingPlan>()
+
        .HasMany(p => p.Tasks)
        .WithOne(t => t.Plan)
        .HasForeignKey(t => t.PlanId)
        .OnDelete(DeleteBehavior.Cascade);
+            builder.Entity<SuccessionRecord>()
+        .HasIndex(s => s.ApplicationId)
+        .IsUnique();
         }
 
         private static Action<Microsoft.EntityFrameworkCore.Metadata.Builders.EntityTypeBuilder<Job>> JobEntity()

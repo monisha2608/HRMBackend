@@ -20,7 +20,7 @@ namespace HRMBackend.Controllers
 
         // GET /api/onboarding/plans?q=&page=1&size=20
         [HttpGet("plans")]
-        [Authorize(Roles = "HR")]
+        [Authorize]
         public async Task<IActionResult> GetPlans([FromQuery] string? q, [FromQuery] int page = 1, [FromQuery] int size = 20)
         {
             page = page < 1 ? 1 : page;
